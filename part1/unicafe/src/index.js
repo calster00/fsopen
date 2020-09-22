@@ -28,14 +28,34 @@ const Statistics = (props) => {
   }
 
   return (
-    <div>
-      <Statistic text='Good: ' value={good} />
-      <Statistic text='Neutral: ' value={neutral} />
-      <Statistic text='Bad: ' value={bad} />
-      <Statistic text='All: ' value={all} />
-      <Statistic text='Average: ' value={avg} />
-      <Statistic text='Positive: ' value={positive + '%'}/>
-    </div>
+    <table>
+      <tbody>
+        <tr>
+          <td><Statistic text='Good'/></td>
+          <td><Statistic value={good}/></td>
+        </tr>
+        <tr>
+          <td><Statistic text='Neutral'/></td>
+          <td><Statistic value={neutral}/></td>
+        </tr>
+        <tr>
+          <td><Statistic text='Bad'/></td>
+          <td><Statistic value={bad}/></td>
+        </tr>
+        <tr>
+          <td><Statistic text='All'/></td>
+          <td><Statistic value={all}/></td>
+        </tr>
+        <tr>
+          <td><Statistic text='Average'/></td>
+          <td><Statistic value={avg}/></td>
+        </tr>
+        <tr>
+          <td><Statistic text='Positive'/></td>
+          <td><Statistic value={positive + ' %'}/></td>
+        </tr>
+      </tbody>
+    </table>
   )
 }
 
