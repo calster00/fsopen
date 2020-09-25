@@ -30,14 +30,14 @@ const Content = ({ course }) => {
   );
 };
 
-const Course = ({ courses }) => {
-  return courses.map((course) => (
-    <div key={course.id}>
+const Course = ({ course }) => {
+  return (
+    <div>
       <Header course={course} />
       <Content course={course} />
       <Total course={course} />
     </div>
-  ));
+  );
 };
 
 const App = () => {
@@ -86,7 +86,9 @@ const App = () => {
     },
   ];
 
-  return <Course courses={courses} />;
+  return courses.map((course) => 
+    <Course key={course.id} course={course} />
+  );
 };
 
 ReactDOM.render(<App />, document.getElementById("root"));
