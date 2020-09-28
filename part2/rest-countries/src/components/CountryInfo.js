@@ -1,6 +1,6 @@
 import React from 'react';
 
-const Country = ({country}) => {
+const CountryInfo = ({country}) => {
   return (
     <div>
       <h1>{country.name}</h1>
@@ -16,4 +16,4 @@ const Country = ({country}) => {
   );
 };
 
-export default Country;
+export default CountryInfo;
