@@ -1,11 +1,7 @@
-import React, { useState } from "react";
+import React from "react";
 import CountryInfo from "./CountryInfo";
 
-const CountryList = ({ list }) => {
-  const [info, setInfoState] = useState(-1);
-
-  const displayInfo = (index) => setInfoState(index);
-
+const CountryList = ({ list, info, displayInfo }) => {
   return (
     <div style={{ listStyle: "none" }}>
       {list.map((country, index) => (
