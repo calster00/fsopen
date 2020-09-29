@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
-import CountryInfo from "./CountryInfo";
-import CountryList from "./CountryList";
-import Filter from "./Filter";
+import CountryInfo from "./components/CountryInfo";
+import CountryList from "./components/CountryList";
+import Filter from "./components/Filter";
 
 function App() {
   const [searchTerm, setSearchTerm] = useState("");

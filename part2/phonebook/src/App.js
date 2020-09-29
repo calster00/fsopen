@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
-import Filter from "./Filter";
-import AddContactForm from "./AddContactForm";
-import ContactList from "./ContactList";
+import Filter from "./components/Filter";
+import AddContactForm from "./components/AddContactForm";
+import ContactList from "./components/ContactList";
 import axios from 'axios';
 
 const App = () => {
@@ -38,14 +38,18 @@ const App = () => {
       return;
     }
 
-    setPersons(
-      persons.concat({
-        name: newName,
-        number: newNumber,
-      })
-    );
-    setNewName("");
-    setNewNumber("");
+    const newPerson = {
+      name: newName,
+      number: newNumber,
+    }
+
+    axios
+      .post("http://localhost:3001/persons", newPerson)
+      .then(response => {
+        setPersons(persons.concat(response.data));
+        setNewName("");
+        setNewNumber("");
+      });
   };
 
   return (
