@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import Filter from "./components/Filter";
 import AddContactForm from "./components/AddContactForm";
 import ContactList from "./components/ContactList";
-import axios from 'axios';
+import contactService from "./services/contacts";
 
 const App = () => {
   const [persons, setPersons] = useState([]);
@@ -11,9 +11,11 @@ const App = () => {
   const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
-    axios
-      .get("http://localhost:3001/persons")
-      .then((response) => setPersons(response.data));
+    contactService
+      .getAll()
+      .then(contacts => {
+        setPersons(contacts)
+      })
   }, []);
 
   const handleNameChange = (event) => {
@@ -41,12 +43,12 @@ const App = () => {
     const newPerson = {
       name: newName,
       number: newNumber,
-    }
+    };
 
-    axios
-      .post("http://localhost:3001/persons", newPerson)
-      .then(response => {
-        setPersons(persons.concat(response.data));
+    contactService
+      .create(newPerson)
+      .then(returnedPerson => {
+        setPersons(persons.concat(returnedPerson));
         setNewName("");
         setNewNumber("");
       });
