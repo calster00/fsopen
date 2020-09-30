@@ -3,12 +3,14 @@ import Filter from "./components/Filter";
 import AddContactForm from "./components/AddContactForm";
 import ContactList from "./components/ContactList";
 import contactService from "./services/contacts";
+import Notification from "./components/Notification";
 
 const App = () => {
   const [persons, setPersons] = useState([]);
   const [newName, setNewName] = useState("");
   const [newNumber, setNewNumber] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
+  const [notificationMsg, setNotificationMsg] = useState(null);
 
   useEffect(() => {
     contactService
@@ -54,6 +56,8 @@ const App = () => {
             }));
             setNewName("");
             setNewNumber("");
+            setNotificationMsg(`${returnedPerson.name}'s number changed`);
+            setTimeout(() => setNotificationMsg(null), 5000);
           });
       }
       return;
@@ -65,6 +69,8 @@ const App = () => {
         setPersons(persons.concat(returnedPerson));
         setNewName("");
         setNewNumber("");
+        setNotificationMsg(`Added ${returnedPerson.name}`);
+        setTimeout(() => setNotificationMsg(null), 5000);
       });
   };
 
@@ -79,6 +85,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={notificationMsg}/>
       <Filter 
         inputValue={searchTerm} 
         onChange={handleFilterChange} 
