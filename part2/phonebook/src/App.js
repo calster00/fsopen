@@ -35,15 +35,29 @@ const App = () => {
 
     if (!newName) return;
 
-    if (persons.find((person) => person.name === newName)) {
-      alert(`${newName} is already added to phonebook`);
-      return;
-    }
-
     const newPerson = {
       name: newName,
       number: newNumber,
     };
+
+    const existingContact = persons.find((person) => person.name === newName);
+
+    if (existingContact) {
+      const confirmDialog = `${newName} is already added to phonebook, replace the old number with a new one?`;
+
+      if (window.confirm(confirmDialog)) {
+        contactService
+          .update(existingContact.id, newPerson)
+          .then((returnedPerson) => {
+            setPersons(persons.map(person => {
+              return person.id === returnedPerson.id ? returnedPerson : person;
+            }));
+            setNewName("");
+            setNewNumber("");
+          });
+      }
+      return;
+    }
 
     contactService
       .create(newPerson)
