@@ -54,10 +54,21 @@ const App = () => {
       });
   };
 
+  const removePerson = ({ id, name }) => {
+    if (window.confirm(`Delete ${name} ?`)) {
+      contactService
+        .remove(id)
+        .then(setPersons(persons.filter(person => person.id !== id)));
+    }
+  };
+
   return (
     <div>
       <h2>Phonebook</h2>
-      <Filter inputValue={searchTerm} onChange={handleFilterChange} />
+      <Filter 
+        inputValue={searchTerm} 
+        onChange={handleFilterChange} 
+      />
       <h3>Add new contact</h3>
       <AddContactForm
         name={newName}
@@ -67,7 +78,11 @@ const App = () => {
         onSubmit={handleSubmit}
       />
       <h2>Numbers</h2>
-      <ContactList persons={persons} searchTerm={searchTerm} />
+      <ContactList 
+        persons={persons}
+        searchTerm={searchTerm}
+        removePerson={removePerson}
+      />
     </div>
   );
 };

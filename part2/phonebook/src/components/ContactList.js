@@ -1,6 +1,6 @@
 import React from "react";
 
-const ContactList = ({ persons, searchTerm }) => {
+const ContactList = ({ persons, searchTerm, removePerson }) => {
   return (
     <ul>
       {persons
@@ -8,6 +8,7 @@ const ContactList = ({ persons, searchTerm }) => {
         .map((person) => (
           <li key={person.name}>
             {person.name} {person.number}
+            <button onClick={() => removePerson(person)}>delete</button>
           </li>
         ))}
     </ul>
