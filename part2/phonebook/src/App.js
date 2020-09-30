@@ -56,9 +56,20 @@ const App = () => {
             }));
             setNewName("");
             setNewNumber("");
-            setNotificationMsg(`${returnedPerson.name}'s number changed`);
+            setNotificationMsg({
+              message: `${returnedPerson.name}'s number changed`,
+              type: "notification"
+            });
             setTimeout(() => setNotificationMsg(null), 5000);
-          });
+          })
+          .catch((error) => {
+            setNotificationMsg({
+              message: `Information for ${existingContact.name} has already been removed from the server`,
+              type: "error"
+            });
+            setTimeout(() => setNotificationMsg(null), 5000);
+            setPersons(persons.filter(person => person.id !== existingContact.id));
+          })
       }
       return;
     }
@@ -69,7 +80,10 @@ const App = () => {
         setPersons(persons.concat(returnedPerson));
         setNewName("");
         setNewNumber("");
-        setNotificationMsg(`Added ${returnedPerson.name}`);
+        setNotificationMsg({ 
+          message: `Added ${returnedPerson.name}`,
+          type: "notification" 
+        });
         setTimeout(() => setNotificationMsg(null), 5000);
       });
   };
@@ -78,7 +92,14 @@ const App = () => {
     if (window.confirm(`Delete ${name} ?`)) {
       contactService
         .remove(id)
-        .then(setPersons(persons.filter(person => person.id !== id)));
+        .then(() => {
+          setPersons(persons.filter(person => person.id !== id));
+          setNotificationMsg({ 
+            message: `Removed ${name}`,
+            type: "notification" 
+          });
+          setTimeout(() => setNotificationMsg(null), 5000);
+        })
     }
   };
 
