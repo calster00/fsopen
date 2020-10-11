@@ -10,7 +10,7 @@ const App = () => {
   const [newName, setNewName] = useState("");
   const [newNumber, setNewNumber] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
-  const [notificationMsg, setNotificationMsg] = useState(null);
+  const [notification, setNotification] = useState(null);
 
   useEffect(() => {
     contactService
@@ -19,6 +19,13 @@ const App = () => {
         setPersons(contacts)
       })
   }, []);
+
+  const notifyWith = (message, type="success") => {
+    setNotification({ message, type })
+    setTimeout(() => {
+      setNotification(null)
+    }, 5000)
+  };
 
   const handleNameChange = (event) => {
     setNewName(event.target.value);
@@ -56,18 +63,13 @@ const App = () => {
             }));
             setNewName("");
             setNewNumber("");
-            setNotificationMsg({
-              message: `${returnedPerson.name}'s number changed`,
-              type: "notification"
-            });
-            setTimeout(() => setNotificationMsg(null), 5000);
+            notifyWith(`Changed number of  ${existingContact.name}`)
           })
           .catch((error) => {
-            setNotificationMsg({
-              message: `Information for ${existingContact.name} has already been removed from the server`,
-              type: "error"
-            });
-            setTimeout(() => setNotificationMsg(null), 5000);
+            notifyWith(
+              `Information for ${existingContact.name} has already been removed from the server`,
+              "error"
+            );
             setPersons(persons.filter(person => person.id !== existingContact.id));
           })
       }
@@ -80,12 +82,12 @@ const App = () => {
         setPersons(persons.concat(returnedPerson));
         setNewName("");
         setNewNumber("");
-        setNotificationMsg({ 
-          message: `Added ${returnedPerson.name}`,
-          type: "notification" 
-        });
-        setTimeout(() => setNotificationMsg(null), 5000);
-      });
+        notifyWith(`Added ${returnedPerson.name}`);
+      })
+      .catch(error => {
+        console.log(error.response.data.error)
+        notifyWith(`${error.response.data.error} `, 'error')
+      })
   };
 
   const removePerson = ({ id, name }) => {
@@ -94,19 +96,23 @@ const App = () => {
         .remove(id)
         .then(() => {
           setPersons(persons.filter(person => person.id !== id));
-          setNotificationMsg({ 
-            message: `Removed ${name}`,
-            type: "notification" 
-          });
-          setTimeout(() => setNotificationMsg(null), 5000);
+          notifyWith(`Removed ${name}`);
+        })
+        .catch(() => {
+          setPersons(persons.filter(p => p.id !== id));
+          notifyWith(`${name} had already been removed`, "error");
         })
     }
   };
 
+  const personsToShow = searchTerm.length === 0
+    ? persons 
+    : persons.filter((person) => person.name.toLowerCase().includes(searchTerm));
+
   return (
     <div>
       <h2>Phonebook</h2>
-      <Notification message={notificationMsg}/>
+      <Notification notification={notification}/>
       <Filter 
         inputValue={searchTerm} 
         onChange={handleFilterChange} 
@@ -121,8 +127,7 @@ const App = () => {
       />
       <h2>Numbers</h2>
       <ContactList 
-        persons={persons}
-        searchTerm={searchTerm}
+        persons={personsToShow}
         removePerson={removePerson}
       />
     </div>

@@ -1,17 +1,13 @@
 import React from "react";
 
-const ContactList = ({ persons, searchTerm, removePerson }) => {
+const ContactList = ({ persons, removePerson }) => {
   return (
-    <ul>
-      {persons
-        .filter((person) => person.name.toLowerCase().includes(searchTerm))
-        .map((person) => (
-          <li key={person.name}>
-            {person.name} {person.number}
-            <button onClick={() => removePerson(person)}>delete</button>
-          </li>
-        ))}
-    </ul>
+      persons.map((person) => (
+        <p key={person.name}>
+          {person.name} {person.number}
+          <button onClick={() => removePerson(person)}>delete</button>
+        </p>
+      ))
   );
 };
 
