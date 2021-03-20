@@ -29,3 +29,25 @@ Content-Type: application/json
   "url": "https://hacks.mozilla.org/2017/09/building-the-dom-faster-speculative-parsing-async-defer-and-preload/",
   "likes": 343
 }
+
+###
+POST http://localhost:3001/api/blogs/
+Content-Type: application/json
+
+{
+  "title": "Things I Don’t Know as of 2018",
+  "author": "Dan Abramov",
+  "url": "https://overreacted.io/things-i-dont-know-as-of-2018/",
+  "likes": 993
+}
+
+###
+POST http://localhost:3001/api/blogs/
+Content-Type: application/json
+
+{
+  "title": "Writing Resilient Components",
+  "author": "Dan Abramov",
+  "url": "https://overreacted.io/writing-resilient-components/",
+  "likes": 560
+}
