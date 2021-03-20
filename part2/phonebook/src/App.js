@@ -66,11 +66,8 @@ const App = () => {
             notifyWith(`Changed number of  ${existingContact.name}`)
           })
           .catch((error) => {
-            notifyWith(
-              `Information for ${existingContact.name} has already been removed from the server`,
-              "error"
-            );
-            setPersons(persons.filter(person => person.id !== existingContact.id));
+            console.log(error.response.data.error)
+            notifyWith(`${error.response.data.error} `, 'error')
           })
       }
       return;
