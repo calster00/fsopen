@@ -1,4 +1,4 @@
-POST http://localhost:3003/api/blogs/
+POST http://localhost:3001/api/blogs/
 Content-Type: application/json
 
 {
@@ -6,4 +6,15 @@ Content-Type: application/json
   "author": "CHARLIE GLEASON",
   "url": "https://blog.heroku.com/a-rock-solid-modern-web-stack",
   "likes": 1036
+}
+
+###
+POST http://localhost:3001/api/blogs/
+Content-Type: application/json
+
+{
+  "title": "Ruby on Rails vs Node.js – The Right Approach To Web Development",
+  "author": "Dawid Karczewski",
+  "url": "https://www.ideamotive.co/blog/ruby-on-rails-vs-node-js",
+  "likes": 1886
 }
