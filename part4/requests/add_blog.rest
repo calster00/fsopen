@@ -1,0 +1,9 @@
+POST http://localhost:3003/api/blogs/
+Content-Type: application/json
+
+{
+  "title": "A Rock Solid, Modern Web Stack—Rails 5 API + ActiveAdmin + Create React App on Heroku",
+  "author": "CHARLIE GLEASON",
+  "url": "https://blog.heroku.com/a-rock-solid-modern-web-stack",
+  "likes": 1036
+}
