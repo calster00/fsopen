@@ -18,3 +18,14 @@ Content-Type: application/json
   "url": "https://www.ideamotive.co/blog/ruby-on-rails-vs-node-js",
   "likes": 1886
 }
+
+###
+POST http://localhost:3001/api/blogs/
+Content-Type: application/json
+
+{
+  "title": "Building the DOM faster: speculative parsing, async, defer and preload",
+  "author": "Milica Mihajlija",
+  "url": "https://hacks.mozilla.org/2017/09/building-the-dom-faster-speculative-parsing-async-defer-and-preload/",
+  "likes": 343
+}
