@@ -82,6 +82,20 @@ test("a blog can be added", async () => {
   expect(blogTitles).toContain("Writing Resilient Components");
 });
 
+test("a blog with no likes value provided has likes set to 0", async () => {
+  await Blog.deleteMany({});
+
+  const blog = {
+    title: "Writing Resilient Components",
+    author: "Dan Abramov",
+    url: "https://overreacted.io/writing-resilient-components/",
+  };
+
+  await api.post("/api/blogs").send(blog);
+  const response = await api.get("/api/blogs");
+  expect(response.body[0].likes).toBe(0);
+});
+
 afterAll(() => {
   mongoose.connection.close();
 });
