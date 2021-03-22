@@ -96,6 +96,23 @@ test("a blog with no likes value provided has likes set to 0", async () => {
   expect(response.body[0].likes).toBe(0);
 });
 
+test("a blog with missing title or url can't be added", async () => {
+  await Blog.deleteMany({});
+
+  const blog = {
+    title: "Writing Resilient Components",
+    author: "Dan Abramov",
+  };
+
+  let response = await api.post("/api/blogs").send(blog);
+  expect(response.status).toBe(400);
+
+  blog.url = "";
+  delete blog.title;
+  response = await api.post("/api/blogs").send(blog);
+  expect(response.status).toBe(400);
+});
+
 afterAll(() => {
   mongoose.connection.close();
 });
