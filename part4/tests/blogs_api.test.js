@@ -32,7 +32,7 @@ beforeEach(async () => {
   await Blog.deleteMany({});
 
   for (const blog of blogs) {
-    await (new Blog(blog)).save();
+    await new Blog(blog).save();
   }
 });
 
@@ -53,6 +53,33 @@ test("the first blog is about Rails", async () => {
   const response = await api.get("/api/blogs");
 
   expect(response.body[0].title).toMatch(/Rails/);
+});
+
+test("the first blog has an id property", async () => {
+  const response = await api.get("/api/blogs");
+
+  expect(response.body[0].id).toBeDefined();
+});
+
+test("a blog can be added", async () => {
+  const blog = {
+    title: "Writing Resilient Components",
+    author: "Dan Abramov",
+    url: "https://overreacted.io/writing-resilient-components/",
+    likes: 8,
+  };
+
+  await api
+    .post("/api/blogs")
+    .send(blog)
+    .expect(201)
+    .expect("Content-Type", /application\/json/);
+
+  const response = await api.get("/api/blogs");
+  expect(response.body).toHaveLength(blogs.length + 1);
+
+  const blogTitles = response.body.map((blog) => blog.title);
+  expect(blogTitles).toContain("Writing Resilient Components");
 });
 
 afterAll(() => {

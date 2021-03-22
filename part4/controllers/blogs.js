@@ -10,12 +10,15 @@ router.get("/api/blogs", async (request, response, next) => {
   }
 });
 
-router.post("/api/blogs", (request, response) => {
+router.post("/api/blogs", async (request, response, next) => {
   const blog = new Blog(request.body);
 
-  blog.save().then((result) => {
-    response.status(201).json(result);
-  });
+  try {
+    const savedBlog = await blog.save();
+    response.status(201).json(savedBlog);
+  } catch (e) {
+    next(e);
+  }
 });
 
 module.exports = router;
