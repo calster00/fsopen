@@ -117,6 +117,19 @@ describe("addition of a new blog", () => {
   });
 });
 
+describe("deletion of a blog", () => {
+  test("succeeds if the id is valid", async () => {
+    const blogsBefore = await Blog.find({});
+
+    const blogToDelete = blogsBefore[0];
+    await api.delete(`/api/blogs/${blogToDelete.id}`).expect(204);
+
+    const blogsAfter = await Blog.find({});
+    const ids = blogsAfter.map((blog) => blog.id);
+    expect(ids).not.toContain(blogToDelete.id);
+  });
+});
+
 afterAll(() => {
   mongoose.connection.close();
 });

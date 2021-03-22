@@ -21,4 +21,13 @@ router.post("/api/blogs", async (request, response, next) => {
   }
 });
 
+router.delete("/api/blogs/:id", async (request, response, next) => {
+  try {
+    await Blog.findByIdAndRemove(request.params.id);
+    response.status(204).end();
+  } catch (e) {
+    next(e);
+  }
+});
+
 module.exports = router;
