@@ -36,81 +36,85 @@ beforeEach(async () => {
   }
 });
 
-test("blogs are returned as json", async () => {
-  await api
-    .get("/api/blogs")
-    .expect(200)
-    .expect("Content-Type", /application\/json/);
+describe("when there are some blogs saved in a database", () => {
+  test("blogs are returned as json", async () => {
+    await api
+      .get("/api/blogs")
+      .expect(200)
+      .expect("Content-Type", /application\/json/);
+  });
+
+  test("all saved blogs are returned", async () => {
+    const response = await api.get("/api/blogs");
+
+    expect(response.body).toHaveLength(blogs.length);
+  });
+
+  test("the first blog is about Rails", async () => {
+    const response = await api.get("/api/blogs");
+
+    expect(response.body[0].title).toMatch(/Rails/);
+  });
+
+  test("the first blog has an id property", async () => {
+    const response = await api.get("/api/blogs");
+
+    expect(response.body[0].id).toBeDefined();
+  });
 });
 
-test("all blogs are returned", async () => {
-  const response = await api.get("/api/blogs");
+describe("addition of a new blog", () => {
+  test("succeeds with valid data", async () => {
+    const blog = {
+      title: "Writing Resilient Components",
+      author: "Dan Abramov",
+      url: "https://overreacted.io/writing-resilient-components/",
+      likes: 8,
+    };
 
-  expect(response.body).toHaveLength(blogs.length);
-});
+    await api
+      .post("/api/blogs")
+      .send(blog)
+      .expect(201)
+      .expect("Content-Type", /application\/json/);
 
-test("the first blog is about Rails", async () => {
-  const response = await api.get("/api/blogs");
+    const response = await api.get("/api/blogs");
+    expect(response.body).toHaveLength(blogs.length + 1);
 
-  expect(response.body[0].title).toMatch(/Rails/);
-});
+    const blogTitles = response.body.map((blog) => blog.title);
+    expect(blogTitles).toContain("Writing Resilient Components");
+  });
 
-test("the first blog has an id property", async () => {
-  const response = await api.get("/api/blogs");
+  test("succeeds with no likes value provided, set to 0 by default", async () => {
+    await Blog.deleteMany({});
 
-  expect(response.body[0].id).toBeDefined();
-});
+    const blog = {
+      title: "Writing Resilient Components",
+      author: "Dan Abramov",
+      url: "https://overreacted.io/writing-resilient-components/",
+    };
 
-test("a blog can be added", async () => {
-  const blog = {
-    title: "Writing Resilient Components",
-    author: "Dan Abramov",
-    url: "https://overreacted.io/writing-resilient-components/",
-    likes: 8,
-  };
+    await api.post("/api/blogs").send(blog);
+    const response = await api.get("/api/blogs");
+    expect(response.body[0].likes).toBe(0);
+  });
 
-  await api
-    .post("/api/blogs")
-    .send(blog)
-    .expect(201)
-    .expect("Content-Type", /application\/json/);
+  test("fails when the title or url are missing", async () => {
+    await Blog.deleteMany({});
 
-  const response = await api.get("/api/blogs");
-  expect(response.body).toHaveLength(blogs.length + 1);
+    const blog = {
+      title: "Writing Resilient Components",
+      author: "Dan Abramov",
+    };
 
-  const blogTitles = response.body.map((blog) => blog.title);
-  expect(blogTitles).toContain("Writing Resilient Components");
-});
+    let response = await api.post("/api/blogs").send(blog);
+    expect(response.status).toBe(400);
 
-test("a blog with no likes value provided has likes set to 0", async () => {
-  await Blog.deleteMany({});
-
-  const blog = {
-    title: "Writing Resilient Components",
-    author: "Dan Abramov",
-    url: "https://overreacted.io/writing-resilient-components/",
-  };
-
-  await api.post("/api/blogs").send(blog);
-  const response = await api.get("/api/blogs");
-  expect(response.body[0].likes).toBe(0);
-});
-
-test("a blog with missing title or url can't be added", async () => {
-  await Blog.deleteMany({});
-
-  const blog = {
-    title: "Writing Resilient Components",
-    author: "Dan Abramov",
-  };
-
-  let response = await api.post("/api/blogs").send(blog);
-  expect(response.status).toBe(400);
-
-  blog.url = "";
-  delete blog.title;
-  response = await api.post("/api/blogs").send(blog);
-  expect(response.status).toBe(400);
+    blog.url = "";
+    delete blog.title;
+    response = await api.post("/api/blogs").send(blog);
+    expect(response.status).toBe(400);
+  });
 });
 
 afterAll(() => {
