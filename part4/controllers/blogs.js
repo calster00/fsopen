@@ -21,6 +21,17 @@ router.post("/api/blogs", async (request, response, next) => {
   }
 });
 
+router.put("/api/blogs/:id", async (request, response, next) => {
+  try {
+    const updatedBlog = await Blog.findByIdAndUpdate(request.params.id, {
+      likes: request.body.likes,
+    }, { new: true });
+    response.status(200).json(updatedBlog);
+  } catch (e) {
+    next(e);
+  }
+});
+
 router.delete("/api/blogs/:id", async (request, response, next) => {
   try {
     await Blog.findByIdAndRemove(request.params.id);
