@@ -1,12 +1,14 @@
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const loginRouter = require("express").Router();
-const User = require("../models/user");
+const {
+  models: { User: UserSQL },
+} = require("../models/index");
 
 loginRouter.post("/", async (request, response) => {
   const body = request.body;
 
-  const user = await User.findOne({ username: body.username });
+  const user = await UserSQL.findOne({ where: { username: body.username } });
   const passwordCorrect =
     user === null
       ? false
@@ -20,7 +22,7 @@ loginRouter.post("/", async (request, response) => {
 
   const userForToken = {
     username: user.username,
-    id: user._id,
+    id: user.id,
   };
 
   const token = jwt.sign(userForToken, process.env.SECRET);

@@ -1,12 +1,14 @@
 const bcrypt = require("bcrypt");
 const usersRouter = require("express").Router();
-const User = require("../models/user");
+const {
+  models: { User: UserSQL, Blog: BlogSQL },
+} = require("../models/index");
 
 usersRouter.post("/", async (request, response, next) => {
   try {
     const { username, name, password } = request.body;
 
-    const existingUser = await User.findOne({ username });
+    const existingUser = await UserSQL.findOne({ where: { username } });
 
     if (existingUser) {
       return response.status(409).send({ error: "Username already exists" });
@@ -20,14 +22,19 @@ usersRouter.post("/", async (request, response, next) => {
     const saltRounds = 10;
     const passwordHash = await bcrypt.hash(password, saltRounds);
 
-    const user = new User({
+    const user = await UserSQL.create({
       username,
       name,
       passwordHash,
     });
 
-    const savedUser = await user.save();
-    response.status(201).json(savedUser);
+    response
+      .status(201)
+      .json({
+        username: user.username,
+        name: user.name,
+        passwordHash: user.passwordHash,
+      });
   } catch (e) {
     next(e);
   }
@@ -35,11 +42,11 @@ usersRouter.post("/", async (request, response, next) => {
 
 usersRouter.get("/", async (request, response, next) => {
   try {
-    const users = await User.find({}).populate("blogs", {
-      url: 1,
-      title: 1,
-      author: 1,
-      id: 1,
+    const users = await UserSQL.findAll({
+      attributes: ["username", "name", "id"],
+      include: [
+        { model: BlogSQL, attributes: ["title", "author", "url", "id"] },
+      ],
     });
     response.json(users);
   } catch (e) {

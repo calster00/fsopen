@@ -1,13 +1,15 @@
 const blogsRouter = require("express").Router();
 const Blog = require("../models/blog");
 const { userExtractor } = require("../utils/middleware");
+const {
+  models: { User: UserSQL, Blog: BlogSQL },
+} = require("../models/index");
 
 blogsRouter.get("/", async (request, response, next) => {
   try {
-    const blogs = await Blog.find({}).populate("user", {
-      username: 1,
-      name: 1,
-      id: 1,
+    const blogs = await BlogSQL.findAll({
+      attributes: ["title", "author", "url", "likes"],
+      include: [{ model: UserSQL, attributes: ["username", "name", "id"] }],
     });
     response.json(blogs);
   } catch (e) {
