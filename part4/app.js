@@ -9,6 +9,7 @@ const usersRouter = require("./controllers/users");
 const loginRouter = require("./controllers/login");
 const middleware = require("./utils/middleware");
 const logger = require("./utils/logger");
+const { sequelize } = require("./models/index");
 
 morgan.token("data", (req) => JSON.stringify(req.body));
 
@@ -36,5 +37,7 @@ app.use("/api/login", loginRouter);
 
 app.use(middleware.unknownEndpoint);
 app.use(middleware.errorHandler);
+
+sequelize.sync();
 
 module.exports = app;
