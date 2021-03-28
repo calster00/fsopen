@@ -8,7 +8,7 @@ const {
 blogsRouter.get("/", async (request, response, next) => {
   try {
     const blogs = await BlogSQL.findAll({
-      attributes: ["title", "author", "url", "likes"],
+      attributes: ["id", "title", "author", "url", "likes"],
       include: [{ model: UserSQL, attributes: ["username", "name", "id"] }],
     });
     response.json(blogs);
@@ -19,14 +19,11 @@ blogsRouter.get("/", async (request, response, next) => {
 
 blogsRouter.post("/", userExtractor, async (request, response, next) => {
   try {
-    const user = request.user;
-    const blog = new Blog({ ...request.body, user: user._id });
-    const savedBlog = await blog.save();
-
-    user.blogs = user.blogs.concat(savedBlog._id);
-    await user.save();
-
-    response.status(201).json(savedBlog);
+    const blog = await BlogSQL.create({
+      ...request.body,
+      userId: request.user.id,
+    });
+    response.status(201).json(blog);
   } catch (e) {
     next(e);
   }
@@ -34,14 +31,14 @@ blogsRouter.post("/", userExtractor, async (request, response, next) => {
 
 blogsRouter.put("/:id", userExtractor, async (request, response, next) => {
   try {
-    const updatedBlog = await Blog.findByIdAndUpdate(
-      request.params.id,
+    const updatedBlog = await BlogSQL.update(
+      { likes: request.body.likes },
       {
-        likes: request.body.likes,
-      },
-      { new: true }
+        where: { id: request.params.id },
+        returning: true,
+      }
     );
-    response.status(200).json(updatedBlog);
+    response.status(200).json(updatedBlog[1][0]);
   } catch (e) {
     next(e);
   }
@@ -51,14 +48,14 @@ blogsRouter.delete("/:id", userExtractor, async (request, response, next) => {
   try {
     const id = request.params.id;
     const user = request.user;
-    const blog = await Blog.findById(id);
+    const blog = await BlogSQL.findByPk(id);
 
     if (!blog) {
       return response.status(404).send({ error: "blog not found" });
     }
 
-    if (blog.user.toString() === user._id.toString()) {
-      await Blog.findByIdAndRemove(id);
+    if (blog.userId.toString() === user.id.toString()) {
+      await BlogSQL.destroy({ where: { id } });
     } else {
       return response.status(401).end();
     }

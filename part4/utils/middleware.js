@@ -42,7 +42,7 @@ const userExtractor = async (request, response, next) => {
     if (!request.token || !decodedToken.id) {
       throw new Error("token missing or invalid");
     }
-    request.user = await UserSQL.findOne({ where: { id: decodedToken.id } });
+    request.user = await UserSQL.findByPk(decodedToken.id);
   } catch (e) {
     return response.status(401).json({ error: e.message });
   }
