@@ -1,6 +1,6 @@
 const logger = require("./logger");
 const {
-  models: { User: UserSQL },
+  models: { User },
 } = require("../models/index");
 const jwt = require("jsonwebtoken");
 
@@ -42,7 +42,7 @@ const userExtractor = async (request, response, next) => {
     if (!request.token || !decodedToken.id) {
       throw new Error("token missing or invalid");
     }
-    request.user = await UserSQL.findByPk(decodedToken.id);
+    request.user = await User.findByPk(decodedToken.id);
   } catch (e) {
     return response.status(401).json({ error: e.message });
   }

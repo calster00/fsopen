@@ -1,31 +1,33 @@
-const mongoose = require("mongoose");
+const { DataTypes } = require("sequelize");
 
-const blogSchema = new mongoose.Schema({
-  title: {
-    type: String,
-    required: true,
-  },
-  author: String,
-  url: {
-    type: String,
-    required: true,
-  },
-  likes: {
-    type: Number,
-    default: 0,
-  },
-  user: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "User",
-  },
-});
+const blog = (sequelize) => {
+  const Blog = sequelize.define("blog", {
+    title: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      validate: {
+        notEmpty: true,
+      },
+    },
+    author: DataTypes.STRING,
+    url: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      validate: {
+        notEmpty: true,
+      },
+    },
+    likes: {
+      type: DataTypes.INTEGER,
+      defaultValue: 0,
+    },
+  });
 
-blogSchema.set("toJSON", {
-  transform: (document, returnedObject) => {
-    returnedObject.id = returnedObject._id.toString();
-    delete returnedObject._id;
-    delete returnedObject.__v;
-  },
-});
+  Blog.associate = (models) => {
+    Blog.belongsTo(models.User);
+  };
 
-module.exports = mongoose.model("Blog", blogSchema);
+  return Blog;
+};
+
+module.exports = blog;

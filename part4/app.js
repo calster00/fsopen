@@ -1,14 +1,12 @@
-const config = require("./utils/config");
+require("dotenv").config();
 const express = require("express");
 const app = express();
 const cors = require("cors");
-const mongoose = require("mongoose");
 const morgan = require("morgan");
 const blogsRouter = require("./controllers/blogs");
 const usersRouter = require("./controllers/users");
 const loginRouter = require("./controllers/login");
 const middleware = require("./utils/middleware");
-const logger = require("./utils/logger");
 const { sequelize } = require("./models/index");
 
 morgan.token("data", (req) => JSON.stringify(req.body));
@@ -16,15 +14,6 @@ morgan.token("data", (req) => JSON.stringify(req.body));
 app.use(
   morgan(":method :url :status :res[content-length] - :response-time ms :data")
 );
-
-logger.info("connecting to", config.MONGODB_URI);
-
-mongoose.connect(config.MONGODB_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-  useFindAndModify: false,
-  useCreateIndex: true,
-});
 
 app.use(cors());
 app.use(express.json());

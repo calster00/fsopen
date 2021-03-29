@@ -1,15 +1,14 @@
 const blogsRouter = require("express").Router();
-const Blog = require("../models/blog");
 const { userExtractor } = require("../utils/middleware");
 const {
-  models: { User: UserSQL, Blog: BlogSQL },
+  models: { User, Blog },
 } = require("../models/index");
 
 blogsRouter.get("/", async (request, response, next) => {
   try {
-    const blogs = await BlogSQL.findAll({
+    const blogs = await Blog.findAll({
       attributes: ["id", "title", "author", "url", "likes"],
-      include: [{ model: UserSQL, attributes: ["username", "name", "id"] }],
+      include: [{ model: User, attributes: ["username", "name", "id"] }],
     });
     response.json(blogs);
   } catch (e) {
@@ -19,7 +18,7 @@ blogsRouter.get("/", async (request, response, next) => {
 
 blogsRouter.post("/", userExtractor, async (request, response, next) => {
   try {
-    const blog = await BlogSQL.create({
+    const blog = await Blog.create({
       ...request.body,
       userId: request.user.id,
     });
@@ -31,7 +30,7 @@ blogsRouter.post("/", userExtractor, async (request, response, next) => {
 
 blogsRouter.put("/:id", userExtractor, async (request, response, next) => {
   try {
-    const updatedBlog = await BlogSQL.update(
+    const updatedBlog = await Blog.update(
       { likes: request.body.likes },
       {
         where: { id: request.params.id },
@@ -48,14 +47,14 @@ blogsRouter.delete("/:id", userExtractor, async (request, response, next) => {
   try {
     const id = request.params.id;
     const user = request.user;
-    const blog = await BlogSQL.findByPk(id);
+    const blog = await Blog.findByPk(id);
 
     if (!blog) {
       return response.status(404).send({ error: "blog not found" });
     }
 
     if (blog.userId.toString() === user.id.toString()) {
-      await BlogSQL.destroy({ where: { id } });
+      await Blog.destroy({ where: { id } });
     } else {
       return response.status(401).end();
     }

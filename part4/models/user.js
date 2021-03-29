@@ -1,31 +1,30 @@
-const mongoose = require("mongoose");
+const { DataTypes } = require("sequelize");
 
-const userSchema = mongoose.Schema({
-  username: {
-    type: String,
-    minlength: [3, "Min allowed username length is 3 characters"],
-    required: true,
-  },
-  name: {
-    type: String,
-    required: true,
-  },
-  passwordHash: String,
-  blogs: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Blog",
+const user = (sequelize) => {
+  const User = sequelize.define("user", {
+    username: {
+      type: DataTypes.STRING,
+      unique: true,
+      allowNull: false,
+      validate: {
+        notEmpty: true,
+      },
     },
-  ],
-});
+    name: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      validate: {
+        len: [3, 60],
+      },
+    },
+    passwordHash: DataTypes.STRING(60),
+  });
 
-userSchema.set("toJSON", {
-  transform: (document, returnedObject) => {
-    returnedObject.id = returnedObject._id.toString();
-    delete returnedObject._id;
-    delete returnedObject.__v;
-    delete returnedObject.passwordHash;
-  },
-});
+  User.associate = (models) => {
+    User.hasMany(models.Blog);
+  };
 
-module.exports = mongoose.model("User", userSchema);
+  return User;
+};
+
+module.exports = user;

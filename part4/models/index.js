@@ -1,6 +1,6 @@
 const { Sequelize } = require("sequelize");
-const user = require("./user-sql");
-const blog = require("./blog-sql");
+const user = require("./user");
+const blog = require("./blog");
 
 const sequelize = new Sequelize({
   database: process.env.DATABASE,
@@ -21,7 +21,6 @@ const models = {
   Blog: blog(sequelize),
 };
 
-// ???
 Object.keys(models).forEach((key) => {
   if ("associate" in models[key]) {
     models[key].associate(models);
